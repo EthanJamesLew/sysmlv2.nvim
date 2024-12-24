@@ -32,55 +32,6 @@ function M.start_syside(opts)
     end
   end
 
-local function underline_and_show_diagnostics(bufnr)
-    bufnr = bufnr or vim.api.nvim_get_current_buf()
-    local diagnostics = vim.diagnostic.get(bufnr)
-
-    if not diagnostics or vim.tbl_isempty(diagnostics) then
-        print("No diagnostics found.")
-        return
-    end
-
-    -- Namespace for diagnostics
-    local ns_id = vim.api.nvim_create_namespace("lsp_diagnostics")
-    vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
-
-    for _, diagnostic in ipairs(diagnostics) do
-        -- Determine highlight group based on severity
-        local hl_group = "DiagnosticUnderlineError"
-        if diagnostic.severity == vim.diagnostic.severity.WARN then
-            hl_group = "DiagnosticUnderlineWarn"
-        elseif diagnostic.severity == vim.diagnostic.severity.INFO then
-            hl_group = "DiagnosticUnderlineInfo"
-        elseif diagnostic.severity == vim.diagnostic.severity.HINT then
-            hl_group = "DiagnosticUnderlineHint"
-        end
-
-        -- Highlight the range
-        vim.api.nvim_buf_add_highlight(
-            bufnr,
-            ns_id,
-            hl_group,
-            diagnostic.lnum,
-            diagnostic.col,
-            diagnostic.end_col or -1
-        )
-
-        -- Add virtual text for diagnostic messages
-        local virt_text = string.format("[%s] %s", diagnostic.source or "LSP", diagnostic.message)
-        vim.api.nvim_buf_set_extmark(
-            bufnr,
-            ns_id,
-            diagnostic.lnum,
-            0,
-            {
-                virt_text = {{virt_text, "DiagnosticVirtualTextError"}},
-                virt_text_pos = "eol",
-            }
-        )
-    end
-end
-
 local function diagnostic_handler(err, result, ctx, config)
     if err then
         vim.notify("LSP Error: " .. tostring(err), vim.log.levels.ERROR)
@@ -97,6 +48,14 @@ local function diagnostic_handler(err, result, ctx, config)
     -- Create namespace for diagnostics
     local ns_id = vim.api.nvim_create_namespace("lsp_diagnostics")
     vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1) -- Clear existing diagnostics
+
+    -- Define severity colors
+    local severity_colors = {
+        [vim.diagnostic.severity.ERROR] = "DiagnosticVirtualTextError",
+        [vim.diagnostic.severity.WARN] = "DiagnosticVirtualTextWarn",
+        [vim.diagnostic.severity.INFO] = "DiagnosticVirtualTextInfo",
+        [vim.diagnostic.severity.HINT] = "DiagnosticVirtualTextHint",
+    }
 
     -- Process diagnostics
     for _, diagnostic in ipairs(result.diagnostics) do
@@ -115,11 +74,22 @@ local function diagnostic_handler(err, result, ctx, config)
                 diagnostic.range.start.character,
                 diagnostic.range["end"].character)
 
-            -- Add virtual text for the diagnostic message
+            -- Add right-justified virtual text
+            local line = diagnostic.range.start.line
             local virt_text = string.format("[%s] %s", diagnostic.source or "LSP", diagnostic.message)
-            vim.api.nvim_buf_set_extmark(bufnr, ns_id, diagnostic.range.start.line, 0, {
-                virt_text = {{virt_text, hl_group}},
-                virt_text_pos = "eol",
+            local max_length = 40 -- Limit message length
+            if #virt_text > max_length then
+                virt_text = virt_text:sub(1, max_length) .. "…"
+            end
+
+            -- Get line length to calculate right alignment
+            local line_length = #vim.api.nvim_buf_get_lines(bufnr, line, line + 1, false)[1]
+            local col_position = math.max(line_length + 2, vim.api.nvim_win_get_width(0) - #virt_text - 2)
+
+            vim.api.nvim_buf_set_extmark(bufnr, ns_id, line, 0, {
+                virt_text = {{virt_text, severity_colors[severity]}},
+                virt_text_pos = "overlay", -- Align text at a specific column
+                virt_text_win_col = col_position, -- Column to right-align the text
             })
         end
     end
