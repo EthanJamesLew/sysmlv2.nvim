@@ -33,34 +33,24 @@ function M.setup(opts)
 
     -- Create the highlights query file
     local query_content = [[
-;; Package definitions
-(package_definition) @definition
-(package_kw) @keyword
-
-;; Part definitions
-(part_definition) @definition
-(part_kw) @keyword
-
-;; Special keywords
-(def_kw) @keyword.function
-
-;; Regular keywords
-(keyword) @keyword
-
-;; Identifiers
-(identifier) @variable
-(package_definition 
-  name: (identifier) @namespace)
-(part_definition
-  name: (identifier) @type)
-
+;; highlights.scm
 ;; Comments
-(comment) @comment
+((comment) @comment)
+
+;; Import statements
+((import_statement) @include)
+
+;; Identifiers and names
+((identifier) @variable)
+((qualified_name) @type)
+
+;; Package children
+((package_def) @comment)
 
 ;; Delimiters
-(left_brace) @punctuation.bracket
-(right_brace) @punctuation.bracket
-(semicolon) @punctuation.delimiter
+"{" @punctuation.bracket
+"}" @punctuation.bracket
+";" @punctuation.delimiter
     ]]
 
     local query_file = queries_path .. '/highlights.scm'
@@ -95,6 +85,51 @@ function M.setup(opts)
             additional_vim_regex_highlighting = false,
         },
     })
+
+    vim.api.nvim_create_user_command('SysMLNodes', function()
+        local function dump_node(node, level)
+            level = level or 0
+            local indent = string.rep("  ", level)
+            
+            -- Get node text
+            local bufnr = vim.api.nvim_get_current_buf()
+            local start_row, start_col, end_row, end_col = node:range()
+            local text = vim.treesitter.get_node_text(node, bufnr)
+            
+            -- Print node info
+            print(string.format("%sType: %s", indent, node:type()))
+            print(string.format("%sText: %s", indent, text))
+            print(string.format("%sRange: %d,%d - %d,%d", indent, start_row, start_col, end_row, end_col))
+            
+            -- Print named children
+            for child in node:iter_children() do
+                dump_node(child, level + 1)
+            end
+        end
+        
+        local parser = vim.treesitter.get_parser(0)
+        if parser then
+            local tree = parser:parse()[1]
+            local root = tree:root()
+            print("Full parse tree:")
+            dump_node(root)
+            
+            -- Get node under cursor
+            local cursor_node = vim.treesitter.get_node()
+            if cursor_node then
+                print("\nNode under cursor:")
+                dump_node(cursor_node)
+                
+                -- Show all ancestors
+                print("\nAncestor chain:")
+                local current = cursor_node
+                while current:parent() do
+                    current = current:parent()
+                    print(string.format("Parent: %s", current:type()))
+                end
+            end
+        end
+    end, {})
 
     -- Add debug command
     vim.api.nvim_create_user_command('DebugSysMLTS', function()

@@ -34,233 +34,190 @@ EOF
 
 # Copy the grammar file
 cat > lua/sysmlv2/treesitter/grammar/grammar.js << 'EOF'
+// grammar.js
 module.exports = grammar({
   name: 'sysml',
 
-  word: $ => $.identifier,
+  conflicts: $ => [
+    [$._name_reference, $.type_reference],
+    [$.identifier, $.qualified_name]
+  ],
 
   precedences: $ => [
-    ['package', 'statement'],
-    ['part', 'statement'],
+    [
+      'qualified_name',
+      'type_reference',
+      'name_reference'
+    ]
+  ],
+
+  extras: $ => [
+    /\s|\r?\n/,
+    $.comment
   ],
 
   rules: {
     source_file: $ => repeat($._definition),
 
     _definition: $ => choice(
+      $.package_def,
+      $.part_def,
       $.comment,
-      $.package_definition,
-      $.part_definition,
-      $.statement
+      $.import_statement
     ),
 
-    package_definition: $ => prec.left('package',
-      seq(
-        $.package_kw,
-        field('name', $.identifier),
-        $.left_brace,
-        optional(repeat($._definition)),
-        $.right_brace
-      )
+    package_def: $ => seq(
+      'package',
+      field('name', $.identifier),
+      '{',
+      repeat($._definition),
+      '}'
     ),
 
-    part_definition: $ => prec.left('part',
-      seq(
-        $.part_kw,
-        optional($.def_kw),
-        field('name', $.identifier),
-        optional($.semicolon)
-      )
+    part_def: $ => seq(
+      'part',
+      field('name', $.identifier),
+      optional(seq(':', $.type_reference)),
+      optional($.block)
     ),
 
-    statement: $ => prec.left('statement', 
-      seq(
-        choice(
-          $.keyword,
-          $.identifier
-        ),
-        optional($.semicolon)
-      )
+    block: $ => seq(
+      '{',
+      repeat($._statement),
+      '}'
     ),
 
-    // Token rules
-    package_kw: $ => 'package',
-    part_kw: $ => 'part',
-    def_kw: $ => 'def',
-    left_brace: $ => '{',
-    right_brace: $ => '}',
-    semicolon: $ => ';',
-    
-    identifier: $ => /[a-zA-Z_][a-zA-Z0-9_]*/,
+    _statement: $ => choice(
+      $.attribute_def,
+      $.value_def,
+      $.port_def,
+      $.comment
+    ),
 
-    comment: $ => choice(
-      seq('//', /[^\n]*/),
+    attribute_def: $ => seq(
+      'attribute',
+      field('name', $.identifier),
+      ':',
+      $.type_reference,
+      ';'
+    ),
+
+    value_def: $ => seq(
+      'value',
+      field('name', $.identifier),
+      ':',
+      $.type_reference,
+      optional('='),
+      optional($._expression),
+      ';'
+    ),
+
+    port_def: $ => seq(
+      'port',
+      field('name', $.identifier),
+      optional(seq(':', $.type_reference)),
+      ';'
+    ),
+
+    type_reference: $ => prec('type_reference', choice(
+      $.identifier,
+      $.qualified_name
+    )),
+
+    _name_reference: $ => prec('name_reference', choice(
+      $.identifier,
+      $.qualified_name
+    )),
+
+    qualified_name: $ => prec.left('qualified_name',
+      sep1($.identifier, '.')
+    ),
+
+    import_statement: $ => seq(
+      'import',
+      $.qualified_name,
+      ';'
+    ),
+
+    _expression: $ => choice(
+      $.number,
+      $.string,
+      $.boolean,
+      $._name_reference
+    ),
+
+    comment: $ => token(choice(
+      seq('//', /.*/),
       seq(
         '/*',
         /[^*]*\*+([^/*][^*]*\*+)*/,
         '/'
       )
-    ),
+    )),
 
-    keyword: $ => choice(
-      'about',
-      'abstract',
-      'accept',
-      'action',
-      'actor',
-      'after',
-      'alias',
-      'all',
-      'allocate',
-      'allocation',
-      'analysis',
-      'and',
-      'as',
-      'assert',
-      'assign',
-      'assume',
-      'at',
-      'attribute',
-      'bind',
-      'binding',
-      'by',
-      'calc',
-      'case',
-      'comment',
-      'concern',
-      'connect',
-      'connection',
-      'constraint',
-      'decide',
-      'default',
-      'defined',
-      'dependency',
-      'derived',
-      'do',
-      'doc',
-      'else',
-      'end',
-      'entry',
-      'enum',
-      'event',
-      'exhibit',
-      'exit',
-      'expose',
-      'false',
-      'filter',
-      'first',
-      'flow',
-      'for',
-      'fork',
-      'frame',
-      'from',
-      'hastype',
-      'if',
-      'implies',
-      'import',
-      'in',
-      'include',
-      'individual',
-      'inout',
-      'interface',
-      'istype',
-      'item',
-      'join',
-      'language',
-      'library',
-      'locale',
-      'loop',
-      'merge',
-      'message',
-      'meta',
-      'metadata',
-      'nonunique',
-      'not',
-      'null',
-      'objective',
-      'occurrence',
-      'of',
-      'or',
-      'ordered',
-      'out',
-      'parallel',
-      'perform',
-      'port',
-      'private',
-      'protected',
-      'public',
-      'readonly',
-      'redefines',
-      'ref',
-      'references',
-      'render',
-      'rendering',
-      'rep',
-      'require',
-      'requirement',
-      'return',
-      'satisfy',
-      'send',
-      'snapshot',
-      'specializes',
-      'stakeholder',
-      'standard',
-      'state',
-      'subject',
-      'subsets',
-      'succession',
-      'then',
-      'timeslice',
-      'to',
-      'transition',
-      'true',
-      'until',
-      'use',
-      'variant',
-      'variation',
-      'verification',
-      'verify',
-      'via',
-      'view',
-      'viewpoint',
-      'when',
-      'while',
-      'xor'
-    )
+    identifier: $ => /[a-zA-Z_][a-zA-Z0-9_]*/,
+    number: $ => /\d+(\.\d+)?/,
+    string: $ => /"[^"]*"/,
+    boolean: $ => choice('true', 'false')
   }
 });
+
+function sep1(rule, separator) {
+  return seq(rule, repeat(seq(separator, rule)));
+}
 EOF
 
 # Create highlights.scm
 cat > lua/sysmlv2/treesitter/grammar/queries/sysml/highlights.scm << 'EOF'
-;; Package definitions
-(package_definition) @definition
-(package_kw) @keyword
+;; highlights.scm
 
-;; Part definitions
-(part_definition) @definition
-(part_kw) @keyword
+; Keywords
+[
+  "package"
+  "part"
+  "attribute"
+  "value"
+  "port"
+  "import"
+] @keyword
 
-;; Special keywords
-(def_kw) @keyword.function
-
-;; Regular keywords
-(keyword) @keyword
-
-;; Identifiers
+; Identifiers and Names
 (identifier) @variable
-(package_definition 
-  name: (identifier) @namespace)
-(part_definition
-  name: (identifier) @type)
 
-;; Comments
+; Types
+(type_reference) @type
+
+; Definitions
+(package_def
+  name: (identifier) @namespace)
+
+(part_def
+  name: (identifier) @function)
+
+(attribute_def
+  name: (identifier) @property)
+
+(value_def
+  name: (identifier) @variable)
+
+(port_def
+  name: (identifier) @variable)
+
+; References
+(qualified_name) @variable
+
+; Literals
+(number) @number
+(string) @string
+(boolean) @boolean
+
+; Comments
 (comment) @comment
 
-;; Delimiters
-(left_brace) @punctuation.bracket
-(right_brace) @punctuation.bracket
-(semicolon) @punctuation.delimiter
+; Operators and Punctuation
+[":" "." "=" ";"] @operator
+
+["{" "}" "(" ")"] @punctuation.bracket
 EOF
 
 # Navigate to grammar directory
