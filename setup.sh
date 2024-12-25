@@ -37,16 +37,11 @@ cat > lua/sysmlv2/treesitter/grammar/grammar.js << 'EOF'
 module.exports = grammar({
   name: 'sysml',
 
-  conflicts: $ => [
-    [$._package_keyword, $.keyword]
-  ],
+  word: $ => $.identifier,
 
   precedences: $ => [
-    [
-      'package_definition',
-      'part_definition',
-      'statement'
-    ]
+    ['package', 'statement'],
+    ['part', 'statement'],
   ],
 
   rules: {
@@ -59,32 +54,43 @@ module.exports = grammar({
       $.statement
     ),
 
-    _package_keyword: $ => 'package',
-    _part_keyword: $ => 'part',
-
-    statement: $ => seq(
-      choice(
-        $.keyword,
-        $.identifier
-      ),
-      optional(';')
+    package_definition: $ => prec.left('package',
+      seq(
+        $.package_kw,
+        field('name', $.identifier),
+        $.left_brace,
+        optional(repeat($._definition)),
+        $.right_brace
+      )
     ),
 
-    package_definition: $ => prec('package_definition', seq(
-      $._package_keyword,
-      field('name', $.identifier),
-      '{',
-      repeat($._definition),
-      '}'
-    )),
+    part_definition: $ => prec.left('part',
+      seq(
+        $.part_kw,
+        optional($.def_kw),
+        field('name', $.identifier),
+        optional($.semicolon)
+      )
+    ),
 
-    part_definition: $ => prec('part_definition', seq(
-      $._part_keyword,
-      optional('def'),
-      field('name', $.identifier),
-      optional(';')
-    )),
+    statement: $ => prec.left('statement', 
+      seq(
+        choice(
+          $.keyword,
+          $.identifier
+        ),
+        optional($.semicolon)
+      )
+    ),
 
+    // Token rules
+    package_kw: $ => 'package',
+    part_kw: $ => 'part',
+    def_kw: $ => 'def',
+    left_brace: $ => '{',
+    right_brace: $ => '}',
+    semicolon: $ => ';',
+    
     identifier: $ => /[a-zA-Z_][a-zA-Z0-9_]*/,
 
     comment: $ => choice(
@@ -126,7 +132,6 @@ module.exports = grammar({
       'connection',
       'constraint',
       'decide',
-      'def',
       'default',
       'defined',
       'dependency',
@@ -228,25 +233,34 @@ EOF
 
 # Create highlights.scm
 cat > lua/sysmlv2/treesitter/grammar/queries/sysml/highlights.scm << 'EOF'
-;; Keywords
+;; Package definitions
+(package_definition) @definition
+(package_kw) @keyword
+
+;; Part definitions
+(part_definition) @definition
+(part_kw) @keyword
+
+;; Special keywords
+(def_kw) @keyword.function
+
+;; Regular keywords
 (keyword) @keyword
 
 ;; Identifiers
 (identifier) @variable
+(package_definition 
+  name: (identifier) @namespace)
+(part_definition
+  name: (identifier) @type)
 
 ;; Comments
 (comment) @comment
 
-;; Operators and delimiters
-["{" "}"] @punctuation.bracket
-";" @punctuation.delimiter
-
-;; Special keywords
-((keyword) @keyword.function
-  (#match? @keyword.function "^(def|part|action|function)$"))
-
-((keyword) @keyword.control
-  (#match? @keyword.control "^(package|if|then|else|while|for|loop|return)$"))
+;; Delimiters
+(left_brace) @punctuation.bracket
+(right_brace) @punctuation.bracket
+(semicolon) @punctuation.delimiter
 EOF
 
 # Navigate to grammar directory
