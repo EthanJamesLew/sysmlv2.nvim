@@ -1,2 +1,2 @@
-# sysmlv2.vim
-SysML v2 vim plugin 
+# sysmlv2.nvim
+SysML v2 neovim plugin 
