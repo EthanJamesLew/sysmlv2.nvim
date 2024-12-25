@@ -5,6 +5,13 @@ local M = {}
 function M.start_syside(opts)
   opts = opts or {}
   
+  -- Check if Node.js is installed
+  local node_check = vim.fn.system("node -v")
+  if node_check:match("not found") then
+    vim.notify("[sysmlv2] Node.js is not installed. Please install Node.js to use the Syside LSP client.", vim.log.levels.ERROR)
+    return
+  end
+
   -- Get the directory of the current script
   local script_dir = debug.getinfo(1, "S").source:match("@?(.*/)")
   

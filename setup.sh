@@ -71,7 +71,7 @@ module.exports = grammar({
 
     comment: _ => token(seq('//', /[^\r\n]*/)),
 
-    keyword: $ => prec(-3, choice(
+    keyword: $ => prec(1, choice(
       'about',
       'abstract',
       'accept',

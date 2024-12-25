@@ -60,7 +60,7 @@
     },
     "keyword": {
       "type": "PREC",
-      "value": -3,
+      "value": 1,
       "content": {
         "type": "CHOICE",
         "members": [
