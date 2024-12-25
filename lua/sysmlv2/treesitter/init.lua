@@ -33,24 +33,13 @@ function M.setup(opts)
 
     -- Create the highlights query file
     local query_content = [[
-;; highlights.scm
+;; Keywords
+((keyword) @property)
+
 ;; Comments
 ((comment) @comment)
+((block_comment) @comment)
 
-;; Import statements
-((import_statement) @include)
-
-;; Identifiers and names
-((identifier) @variable)
-((qualified_name) @type)
-
-;; Package children
-((package_def) @comment)
-
-;; Delimiters
-"{" @punctuation.bracket
-"}" @punctuation.bracket
-";" @punctuation.delimiter
     ]]
 
     local query_file = queries_path .. '/highlights.scm'
@@ -71,7 +60,7 @@ function M.setup(opts)
     parser_configs.sysml = {
         install_info = {
             url = grammar_path,
-            files = { 'src/parser.c' },
+            files = { 'src/parser.c', 'src/scanner.c' },
             generate_requires_npm = false,
             requires_generate_from_grammar = false,
         },
