@@ -3,7 +3,7 @@ local M = {}
 function M.setup(opts)
     -- Debug info about nvim-treesitter
     local has_ts, ts = pcall(require, 'nvim-treesitter.configs')
-    print("Has treesitter:", has_ts)
+    -- print("Has treesitter:", has_ts)
     if not has_ts then
         vim.notify('nvim-treesitter not found', vim.log.levels.ERROR)
         return
@@ -15,17 +15,17 @@ function M.setup(opts)
     local plugin_root = vim.fn.fnamemodify(plugin_path, ':h:h:h')
     
     -- Print paths for debugging
-    print("Plugin path:", plugin_path)
-    print("Grammar path:", grammar_path)
-    print("Plugin root:", plugin_root)
+    -- print("Plugin path:", plugin_path)
+    -- print("Grammar path:", grammar_path)
+    -- print("Plugin root:", plugin_root)
 
     -- Verify queries directory exists
     local queries_path = plugin_root .. '/queries/sysml'
     local queries_exists = vim.fn.isdirectory(queries_path) == 1
-    print("Queries path exists:", queries_exists)
+    -- print("Queries path exists:", queries_exists)
     if queries_exists then
         local files = vim.fn.readdir(queries_path)
-        print("Files in queries directory:", vim.inspect(files))
+        -- print("Files in queries directory:", vim.inspect(files))
     end
 
     -- Try to ensure the queries directory is created
@@ -47,9 +47,9 @@ function M.setup(opts)
     if f then
         f:write(query_content)
         f:close()
-        print("Created query file at:", query_file)
+        -- print("Created query file at:", query_file)
     else
-        print("Failed to create query file")
+        -- print("Failed to create query file")
     end
 
     -- Add query path to runtimepath
@@ -153,7 +153,7 @@ function M.setup(opts)
     vim.api.nvim_create_autocmd("FileType", {
         pattern = "sysml",
         callback = function(args)
-            vim.notify("SysML file detected, attempting to enable highlighting")
+            -- vim.notify("SysML file detected, attempting to enable highlighting")
             pcall(vim.cmd, "TSBufEnable highlight")
             -- Try to force highlighting refresh
             vim.cmd([[syntax enable]])

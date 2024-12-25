@@ -68,7 +68,7 @@ function M.start_syside(opts)
       vim.notify("[sysmlv2] Failed to attach client: " .. tostring(err), vim.log.levels.ERROR)
       return
     end
-    vim.notify("[sysmlv2] LSP client started and attached successfully", vim.log.levels.INFO)
+    -- vim.notify("[sysmlv2] LSP client started and attached successfully", vim.log.levels.INFO)
   else
     vim.notify("[sysmlv2] Could not start syside client", vim.log.levels.ERROR)
   end
