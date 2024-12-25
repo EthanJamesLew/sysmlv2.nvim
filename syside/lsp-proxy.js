@@ -2,6 +2,7 @@
 
 const { spawn } = require('child_process');
 const fs = require('fs');
+const path = require('path');
 
 const serverPath = process.argv[2];
 if (!serverPath) {
@@ -10,7 +11,13 @@ if (!serverPath) {
 }
 
 const server = spawn('node', [serverPath, '--stdio']);
-const logFile = fs.createWriteStream('/tmp/syside-lsp-filtered.log');
+const logFilePath = '/tmp/syside-lsp-filtered.log';
+let logFile;
+
+// Check if the directory for the log file exists
+if (fs.existsSync(path.dirname(logFilePath))) {
+    logFile = fs.createWriteStream(logFilePath);
+}
 
 // Log and forward server output
 server.stdout.on('data', (data) => {
@@ -18,26 +25,36 @@ server.stdout.on('data', (data) => {
     if (!data.toString().includes('\{') && !data.toString().includes('Content-Length:')) {
         return;
     }
-    logFile.write(`From Server: ${data}\n---\n`);
+    if (logFile) {
+        logFile.write(`From Server: ${data}\n---\n`);
+    }
     process.stdout.write(data);
 });
 
 // Log stderr
 server.stderr.on('data', (data) => {
-    logFile.write(`[stderr] ${data}\n`);
+    if (logFile) {
+        logFile.write(`[stderr] ${data}\n`);
+    }
 });
 
 // Log and forward stdin to server
 process.stdin.on('data', (data) => {
-    logFile.write(`From Client: ${data}\n---\n`);
+    if (logFile) {
+        logFile.write(`From Client: ${data}\n---\n`);
+    }
     server.stdin.write(data);
 });
 
 server.on('exit', (code) => {
-    logFile.end();
+    if (logFile) {
+        logFile.end();
+    }
     process.exit(code);
 });
 
 process.on('uncaughtException', (err) => {
-    logFile.write(`[error] ${err.toString()}\n`);
+    if (logFile) {
+        logFile.write(`[error] ${err.toString()}\n`);
+    }
 });
