@@ -1,74 +1,77 @@
--- lua/sysmlv2/lsp.lua
+-- lua/sysmlv2/lsp_manual.lua
 local M = {}
 
-function M.setup(opts)
-  -- 1) Load nvim-lspconfig safely
-  local ok, lspconfig = pcall(require, "lspconfig")
-  if not ok then
-    vim.notify("[sysmlv2] nvim-lspconfig not found! Please install it.", vim.log.levels.ERROR)
-    return
-  end
+-- Manually start a Syside LSP client and attach it to the current buffer
+function M.start_syside(opts)
+  opts = opts or {}
+  
+  -- Get the directory of the current script
+  local script_dir = debug.getinfo(1, "S").source:match("@?(.*/)")
+  
+  -- Path to the proxy script
+  local proxy_path = script_dir .. "../../syside/lsp-proxy.js"
 
-  -- 2) Path to syside-languageserver.js (expand ~)
-  local syside_path = vim.fn.expand(
-    (opts and opts.syside_server_path) or "~/dev/syside-languageserver/dist/syside-languageserver.js"
-  )
-
-  -- 3) Build the command
-  local cmd = { "node", syside_path, "--stdio" }
-
-  -- 4) (Optional) nvim-cmp capabilities
-  local capabilities = vim.lsp.protocol.make_client_capabilities()
-  pcall(function()
-    local cmp_lsp = require("cmp_nvim_lsp")
-    capabilities = cmp_lsp.default_capabilities(capabilities)
-  end)
-
-  -- 5) Define on_attach with your keymaps, etc.
-  local function on_attach(client, bufnr)
-    local opts = { noremap = true, silent = true, buffer = bufnr }
-    vim.keymap.set("n", "K",         vim.lsp.buf.hover,         opts)
-    vim.keymap.set("n", "gd",        vim.lsp.buf.definition,     opts)
-    vim.keymap.set("n", "gi",        vim.lsp.buf.implementation, opts)
-    vim.keymap.set("n", "gr",        vim.lsp.buf.references,     opts)
-    vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename,        opts)
-    vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action,   opts)
-
-    -- Optional: Auto-format if server supports it
-    if client.server_capabilities.documentFormattingProvider then
-      vim.api.nvim_create_autocmd("BufWritePre", {
-        group = vim.api.nvim_create_augroup("Sysmlv2FormatOnSave", { clear = true }),
-        buffer = bufnr,
-        callback = function()
-          vim.lsp.buf.format({ async = false })
-        end,
-      })
+  -- Ensure proxy script exists and is executable
+  local proxy_content = vim.fn.system({
+    "cat", proxy_path
+  })
+  if proxy_content == "" then
+    -- Write proxy script if it doesn't exist
+    local f = io.open(proxy_path, "w")
+    if f then
+      f:write(vim.fn.system({
+        "cat", script_dir .. "../../syside/lsp-proxy.js"
+      }))
+      f:close()
+      vim.fn.system({"chmod", "+x", proxy_path})
     end
   end
 
-  -- 6) **Define** the custom server under `configs.syside` if it’s not already there
-  if not lspconfig.configs.syside then
-    lspconfig.configs.syside = {
-      default_config = {
-        cmd = cmd,
-        filetypes = { "sysml" },   -- or "syside", etc.
-        root_dir = function(fname)
-          return lspconfig.util.root_pattern("syside.config", ".git")(fname)
-            or lspconfig.util.path.dirname(fname)
-        end,
-        on_attach = on_attach,
-        capabilities = capabilities,
-        settings = {
-          -- if syside-languageserver supports extra settings:
-          -- syside = { diagnostics = { enabled = true }, ... }
-        },
-      },
-    }
+  -- Define minimal on_attach function for gd
+  local function on_attach(client, bufnr)
+    -- Enable go to definition
+    vim.keymap.set("n", "gd", function()
+      vim.lsp.buf.definition()
+    end, { noremap = true, silent = true, buffer = bufnr })
   end
 
-  -- 7) Now you can safely call `.setup()` on `lspconfig.syside`
-  lspconfig.syside.setup({})
+  -- Start with minimal client configuration and required handlers
+  local client_id = vim.lsp.start_client({
+    name = "syside",
+    cmd = {
+      "node",
+      proxy_path,
+      script_dir .. "../../syside/syside-languageserver.js",
+    },
+    on_attach = on_attach,  -- Add the on_attach function
+    handlers = {
+      ["sysml/registerTextEditorCommands"] = function(err, result, ctx, config)
+        return vim.NIL
+      end,
+      ["sysml/findStdlib"] = function(err, result, ctx, config)
+        return "/Users/ethanlew/.sysml-2ls"
+      end
+    },
+    capabilities = {
+      workspace = {
+        configuration = {
+          dynamicRegistration = false
+        }
+      }
+    }
+  })
+
+  -- Simple attach with error handling
+  if client_id then
+    local success, err = pcall(vim.lsp.buf_attach_client, 0, client_id)
+    if not success then
+      vim.notify("[sysmlv2] Failed to attach client: " .. tostring(err), vim.log.levels.ERROR)
+      return
+    end
+    vim.notify("[sysmlv2] LSP client started and attached successfully", vim.log.levels.INFO)
+  else
+    vim.notify("[sysmlv2] Could not start syside client", vim.log.levels.ERROR)
+  end
 end
 
 return M
-
