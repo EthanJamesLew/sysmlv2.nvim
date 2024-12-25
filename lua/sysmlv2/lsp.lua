@@ -49,7 +49,7 @@ function M.start_syside(opts)
         return vim.NIL
       end,
       ["sysml/findStdlib"] = function(err, result, ctx, config)
-        return "/Users/ethanlew/.sysml-2ls"
+        return script_dir .. "../../sysml.library" 
       end
     },
     capabilities = {
