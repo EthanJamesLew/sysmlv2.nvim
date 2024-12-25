@@ -9,3 +9,6 @@ vim.bo.tabstop = 2
 if vim.fn.exists(':TSBufEnable') == 2 then
     pcall(vim.cmd, 'TSBufEnable highlight')
 end
+
+-- Turn on the lsp
+require('sysmlv2.lsp').start_syside()
