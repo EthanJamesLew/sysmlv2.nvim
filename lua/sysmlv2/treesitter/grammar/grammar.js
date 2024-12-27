@@ -18,150 +18,240 @@ module.exports = grammar({
   ],
 
   rules: {
-    source_file: $ => repeat($._definition),
-
-    _definition: $ => choice(
-      $.comment,
-      $.block_comment,
-      $._statement,
+    source_file: $ => repeat(
+      choice(
+        $.root_namespace,
+        $.dependency,
+      )
     ),
-
-    _statement: $ => choice(
-      $.keyword,
-      $.identifier,
-    ),
-
+    
     identifier: $ => /[a-zA-Z_][a-zA-Z0-9_]*/,
 
-    comment: _ => token(seq('//', /[^\r\n]*/)),
-
-    keyword: $ => prec(1, choice(
-      'about',
-      'abstract',
-      'accept',
-      'action',
-      'actor',
-      'after',
-      'alias',
-      'all',
-      'allocate',
-      'allocation',
-      'analysis',
-      'and',
-      'as',
-      'assert',
-      'assign',
-      'assume',
-      'at',
-      'attribute',
-      'bind',
-      'binding',
-      'by',
-      'calc',
-      'case',
-      'comment',
-      'concern',
-      'connect',
-      'connection',
-      'constraint',
-      'decide',
-      'def',
-      'default',
-      'defined',
-      'dependency',
-      'derived',
-      'do',
-      'doc',
-      'else',
-      'end',
-      'entry',
-      'enum',
-      'event',
-      'exhibit',
-      'exit',
-      'expose',
-      'false',
-      'filter',
-      'first',
-      'flow',
-      'for',
-      'fork',
-      'frame',
-      'from',
-      'hastype',
-      'if',
-      'implies',
-      'import',
-      'in',
-      'include',
-      'individual',
-      'inout',
-      'interface',
-      'istype',
-      'item',
-      'join',
-      'language',
-      'library',
-      'locale',
-      'loop',
-      'merge',
-      'message',
-      'meta',
-      'metadata',
-      'nonunique',
-      'not',
-      'null',
-      'objective',
-      'occurrence',
-      'of',
-      'or',
-      'ordered',
-      'out',
-      'package',
-      'parallel',
-      'part',
-      'perform',
-      'port',
-      'private',
-      'protected',
-      'public',
-      'readonly',
-      'redefines',
-      'ref',
-      'references',
-      'render',
-      'rendering',
-      'rep',
-      'require',
-      'requirement',
-      'return',
-      'satisfy',
-      'send',
-      'snapshot',
-      'specializes',
-      'stakeholder',
-      'standard',
-      'state',
-      'subject',
-      'subsets',
-      'succession',
-      'then',
-      'timeslice',
-      'to',
-      'transition',
-      'true',
-      'until',
-      'use',
-      'variant',
-      'variation',
-      'verification',
-      'verify',
-      'via',
-      'view',
-      'viewpoint',
-      'when',
-      'while',
-      'xor'
+    string_literal: $ => token(seq(
+      '"',
+      /[^"]*/,
+      '"'
     )),
+
+    root_namespace: $ => seq(
+      choice(
+        $.package,
+        $.library_package
+      ),
+    ),
+
+    // ------------------------------------------------------------------------
+    // PACKAGE
+    // ------------------------------------------------------------------------
+    package: $ => seq(
+      $.package_declaration,
+      $.package_body
+    ),
+
+    library_package: $ => seq(
+      optional('standard'),
+      'library',
+      $.package_declaration,
+      $.package_body
+    ),
+
+    package_declaration: $ => seq(
+      'package',
+      optional($.identification),
+    ), 
+
+    package_body: $ => choice(
+      seq(';'),
+      seq(
+        '{',
+        repeat(
+          choice(
+            $.package_member,
+            $.import_stmt
+          )
+        ),
+        '}'
+      )
+    ),
+
+    // ------------------------------------------------------------------------
+    // PACKAGE MEMBER
+    //   PackageMember returns SysML::OwningMembership : 
+    //       MemberPrefix ( ownedRelatedElement += DefinitionElement
+    //                    | ownedRelatedElement += UsageElement )
+    // ------------------------------------------------------------------------
+    package_member: $ => seq(
+      optional($.member_prefix),
+      choice(
+        $.definition_element,
+        $.usage_element
+      )
+    ),
+
+    // A placeholder for "MemberPrefix"
+    member_prefix: $ => prec(-1, choice(
+      'public',
+      'private',
+      'protected'
+    )),
+
+    // ------------------------------------------------------------------------
+    // DEFINITION ELEMENT
+    //   e.g. "Package", "LibraryPackage", "Dependency", "AttributeDefinition", ...
+    //   The Xtext grammar lumps them all in "DefinitionElement returns SysML::Element"
+    // ------------------------------------------------------------------------
+    definition_element: $ => choice(
+      $.package_declaration,
+      $.dependency,
+      // ...
+      // And so on
+    ),
+
+    dependency: $ => seq(
+      // optional repeated prefix metadata
+      repeat($.prefix_metadata_annotation),
+      'dependency',
+      optional(seq(
+        optional($.identification),
+        'from'
+      )),
+      // a simplified list of clients
+      field('clients', $.qualified_name_list),
+      'to',
+      // a simplified list of suppliers
+      field('suppliers', $.qualified_name_list),
+      // relationship body => for example, either ';' or '{ ... }'
+      $.relationship_body
+    ),
+
+
+    import_stmt: $ => seq(
+      choice(
+        $.membership_import,
+        $.namespace_import,
+      ),
+      $.relationship_body
+    ),
+
+    membership_import: $ => seq(
+      $.import_prefix,
+      $.imported_membership,
+    ),
+
+    imported_membership: $ => prec.left(seq(
+      choice(
+        $.membership,
+        $.qualified_name
+      ),
+      repeat(seq('::', choice($.membership, $.qualified_name))),
+    )),
+
+    imported_namespace: $ => prec(1, seq(
+      choice(
+        $.imported_membership,
+        $.qualified_name
+      ),
+      repeat(seq('::', choice($.membership, $.qualified_name))),
+      '::',
+      '*'
+    )),
+
+    membership: $ => choice(
+      $.member_prefix,
+      $.alias_member,
+      $.initial_node_member,
+      $.transition_source_member,
+    ),
+
+    alias_member: $ => prec(-1, seq(
+      'TODO'
+    )),
+
+    initial_node_member: $ => prec(-2, seq(
+      'TODO'
+    )),
+
+    transition_source_member: $ => prec(-3, seq(
+      'TODO'
+    )),
+
+    namespace_import: $ => seq(
+      $.import_prefix,
+      $.imported_namespace,
+    ),
+
+    import_prefix: $ => seq(
+      optional($.visibility),
+      'import',
+      optional('all')
+    ),
+
+    visibility: $ => choice(
+      'public',
+      'private',
+      'protected'
+    ),
+
+    usage_element: $ => choice(
+      $.non_occurrence_usage_element,
+      $.occurrence_usage_element
+    ),
+
+    non_occurrence_usage_element: $ => choice(
+      // e.g. attribute usage, reference usage, etc.
+      // For now, just a placeholder
+      seq('attribute', $.usage_body)
+    ),
+
+    occurrence_usage_element: $ => choice(
+      // e.g. occurrence usage, item usage, part usage, etc.
+      // For now, just a placeholder
+      seq('occurrence', $.usage_body)
+    ),
+
+    identification: $ => choice(
+      seq('<', $.identifier, '>', optional($.identifier)),
+      $.identifier
+    ),
+
+    prefix_metadata_annotation: $ => token('#'),
+
+    qualified_name_list: $ => seq(
+      $.qualified_name,
+      repeat(seq(',', $.qualified_name))
+    ),
+
+    relationship_body: $ => choice(
+      seq(';'),
+      seq('{', repeat($.owned_annotation), '}')
+    ),
+
+    qualified_name: $ => seq(
+      $.identifier,
+      repeat(seq('.', $.identifier))
+    ),
+
+    qualified_name_list: $ => seq(
+      $.qualified_name,
+      repeat(seq(',', $.qualified_name))
+    ),
+
+    usage_body: $ => choice(
+      ';',
+      seq('{', '...TODO...', '}')
+    ),
+
+    owned_annotation: $ => seq(
+      // e.g. could be a reference to the annotated element
+      'comment', $.identification, $.regular_comment
+      // this is obviously incomplete — just to show structure
+    ),
+
+    comment: $ => token(seq('//', /[^\r\n]*/)),
+
+    regular_comment: $ => choice(
+      $.comment,
+      $.block_comment
+    ),
   }
 });
