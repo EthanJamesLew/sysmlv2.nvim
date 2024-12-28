@@ -1,16 +1,654 @@
 [
   {
-    "type": "keyword",
+    "type": "alias_member",
     "named": true,
     "fields": {}
   },
   {
-    "type": "source_file",
+    "type": "annotating_element",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "documentation",
+          "named": true
+        },
+        {
+          "type": "regular_comment",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "attribute_definition",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "attribute_def_keyword",
+          "named": true
+        },
+        {
+          "type": "definition",
+          "named": true
+        },
+        {
+          "type": "definition_prefix",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "attribute_usage",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "attribute_usage_keyword",
+          "named": true
+        },
+        {
+          "type": "usage",
+          "named": true
+        },
+        {
+          "type": "usage_prefix",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "attribute_usage_keyword",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "attribute_keyword",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "basic_definition_prefix",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "basic_usage_prefix",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "definition",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "definition_body",
+          "named": true
+        },
+        {
+          "type": "definition_declaration",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "definition_body",
     "named": true,
     "fields": {},
     "children": {
       "multiple": true,
       "required": false,
+      "types": [
+        {
+          "type": "alias_member",
+          "named": true
+        },
+        {
+          "type": "definition_member",
+          "named": true
+        },
+        {
+          "type": "import_stmt",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "definition_declaration",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identification",
+          "named": true
+        },
+        {
+          "type": "subclassification_part",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "definition_element",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "annotating_element",
+          "named": true
+        },
+        {
+          "type": "attribute_definition",
+          "named": true
+        },
+        {
+          "type": "dependency",
+          "named": true
+        },
+        {
+          "type": "package_declaration",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "definition_member",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "definition_element",
+          "named": true
+        },
+        {
+          "type": "member_prefix",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "definition_prefix",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "basic_definition_prefix",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "dependency",
+    "named": true,
+    "fields": {
+      "clients": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "qualified_name_list",
+            "named": true
+          }
+        ]
+      },
+      "suppliers": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "qualified_name_list",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identification",
+          "named": true
+        },
+        {
+          "type": "prefix_metadata_annotation",
+          "named": true
+        },
+        {
+          "type": "relationship_body",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "documentation",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "regular_comment",
+          "named": true
+        },
+        {
+          "type": "string_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "identification",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "import_prefix",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "visibility",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "import_stmt",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "membership_import",
+          "named": true
+        },
+        {
+          "type": "namespace_import",
+          "named": true
+        },
+        {
+          "type": "relationship_body",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "imported_membership",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "membership",
+          "named": true
+        },
+        {
+          "type": "qualified_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "imported_namespace",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "imported_membership",
+          "named": true
+        },
+        {
+          "type": "membership",
+          "named": true
+        },
+        {
+          "type": "qualified_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "initial_node_member",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "library_package",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "package_body",
+          "named": true
+        },
+        {
+          "type": "package_declaration",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "member_prefix",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "membership",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "alias_member",
+          "named": true
+        },
+        {
+          "type": "initial_node_member",
+          "named": true
+        },
+        {
+          "type": "member_prefix",
+          "named": true
+        },
+        {
+          "type": "transition_source_member",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "membership_import",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "import_prefix",
+          "named": true
+        },
+        {
+          "type": "imported_membership",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "namespace_import",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "import_prefix",
+          "named": true
+        },
+        {
+          "type": "imported_namespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "non_occurrence_usage_element",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "attribute_usage",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "occurrence_usage_element",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "usage_body",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "owned_annotation",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identification",
+          "named": true
+        },
+        {
+          "type": "regular_comment",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "owned_subclassification",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "qualified_name",
+          "named": true
+        },
+        {
+          "type": "subclassification_part",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "package",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "package_body",
+          "named": true
+        },
+        {
+          "type": "package_declaration",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "package_body",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "import_stmt",
+          "named": true
+        },
+        {
+          "type": "package_member",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "package_declaration",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identification",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "package_member",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "definition_element",
+          "named": true
+        },
+        {
+          "type": "member_prefix",
+          "named": true
+        },
+        {
+          "type": "usage_element",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "qualified_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "qualified_name_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "qualified_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "regular_comment",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
       "types": [
         {
           "type": "block_comment",
@@ -19,20 +657,214 @@
         {
           "type": "comment",
           "named": true
-        },
+        }
+      ]
+    }
+  },
+  {
+    "type": "relationship_body",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
         {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "keyword",
+          "type": "owned_annotation",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "about",
+    "type": "root_namespace",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "library_package",
+          "named": true
+        },
+        {
+          "type": "package",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "source_file",
+    "named": true,
+    "root": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "dependency",
+          "named": true
+        },
+        {
+          "type": "root_namespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "specializes_keyword",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "subclassification_part",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "owned_subclassification",
+          "named": true
+        },
+        {
+          "type": "specializes_keyword",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "transition_source_member",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "usage",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "usage_completion",
+          "named": true
+        },
+        {
+          "type": "usage_declaration",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "usage_body",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "usage_completion",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "usage_body",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "usage_declaration",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "usage_element",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "non_occurrence_usage_element",
+          "named": true
+        },
+        {
+          "type": "occurrence_usage_element",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "usage_prefix",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "basic_usage_prefix",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "visibility",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "*",
+    "named": false
+  },
+  {
+    "type": ",",
+    "named": false
+  },
+  {
+    "type": ".",
+    "named": false
+  },
+  {
+    "type": "...TODO...",
+    "named": false
+  },
+  {
+    "type": "::",
+    "named": false
+  },
+  {
+    "type": ":>",
+    "named": false
+  },
+  {
+    "type": ";",
+    "named": false
+  },
+  {
+    "type": "<",
+    "named": false
+  },
+  {
+    "type": ">",
+    "named": false
+  },
+  {
+    "type": "TODO",
     "named": false
   },
   {
@@ -40,91 +872,23 @@
     "named": false
   },
   {
-    "type": "accept",
-    "named": false
-  },
-  {
-    "type": "action",
-    "named": false
-  },
-  {
-    "type": "actor",
-    "named": false
-  },
-  {
-    "type": "after",
-    "named": false
-  },
-  {
-    "type": "alias",
-    "named": false
-  },
-  {
     "type": "all",
     "named": false
   },
   {
-    "type": "allocate",
-    "named": false
+    "type": "attribute_def_keyword",
+    "named": true
   },
   {
-    "type": "allocation",
-    "named": false
-  },
-  {
-    "type": "analysis",
-    "named": false
-  },
-  {
-    "type": "and",
-    "named": false
-  },
-  {
-    "type": "as",
-    "named": false
-  },
-  {
-    "type": "assert",
-    "named": false
-  },
-  {
-    "type": "assign",
-    "named": false
-  },
-  {
-    "type": "assume",
-    "named": false
-  },
-  {
-    "type": "at",
-    "named": false
-  },
-  {
-    "type": "attribute",
-    "named": false
-  },
-  {
-    "type": "bind",
-    "named": false
-  },
-  {
-    "type": "binding",
-    "named": false
+    "type": "attribute_keyword",
+    "named": true
   },
   {
     "type": "block_comment",
     "named": true
   },
   {
-    "type": "by",
-    "named": false
-  },
-  {
-    "type": "calc",
-    "named": false
-  },
-  {
-    "type": "case",
+    "type": "comment",
     "named": false
   },
   {
@@ -132,51 +896,7 @@
     "named": true
   },
   {
-    "type": "comment",
-    "named": false
-  },
-  {
-    "type": "concern",
-    "named": false
-  },
-  {
-    "type": "connect",
-    "named": false
-  },
-  {
-    "type": "connection",
-    "named": false
-  },
-  {
-    "type": "constraint",
-    "named": false
-  },
-  {
-    "type": "decide",
-    "named": false
-  },
-  {
-    "type": "def",
-    "named": false
-  },
-  {
-    "type": "default",
-    "named": false
-  },
-  {
-    "type": "defined",
-    "named": false
-  },
-  {
     "type": "dependency",
-    "named": false
-  },
-  {
-    "type": "derived",
-    "named": false
-  },
-  {
-    "type": "do",
     "named": false
   },
   {
@@ -184,71 +904,7 @@
     "named": false
   },
   {
-    "type": "else",
-    "named": false
-  },
-  {
-    "type": "end",
-    "named": false
-  },
-  {
-    "type": "entry",
-    "named": false
-  },
-  {
-    "type": "enum",
-    "named": false
-  },
-  {
-    "type": "event",
-    "named": false
-  },
-  {
-    "type": "exhibit",
-    "named": false
-  },
-  {
-    "type": "exit",
-    "named": false
-  },
-  {
-    "type": "expose",
-    "named": false
-  },
-  {
-    "type": "false",
-    "named": false
-  },
-  {
-    "type": "filter",
-    "named": false
-  },
-  {
-    "type": "first",
-    "named": false
-  },
-  {
-    "type": "flow",
-    "named": false
-  },
-  {
-    "type": "for",
-    "named": false
-  },
-  {
-    "type": "fork",
-    "named": false
-  },
-  {
-    "type": "frame",
-    "named": false
-  },
-  {
     "type": "from",
-    "named": false
-  },
-  {
-    "type": "hastype",
     "named": false
   },
   {
@@ -256,51 +912,7 @@
     "named": true
   },
   {
-    "type": "if",
-    "named": false
-  },
-  {
-    "type": "implies",
-    "named": false
-  },
-  {
     "type": "import",
-    "named": false
-  },
-  {
-    "type": "in",
-    "named": false
-  },
-  {
-    "type": "include",
-    "named": false
-  },
-  {
-    "type": "individual",
-    "named": false
-  },
-  {
-    "type": "inout",
-    "named": false
-  },
-  {
-    "type": "interface",
-    "named": false
-  },
-  {
-    "type": "istype",
-    "named": false
-  },
-  {
-    "type": "item",
-    "named": false
-  },
-  {
-    "type": "join",
-    "named": false
-  },
-  {
-    "type": "language",
     "named": false
   },
   {
@@ -312,59 +924,7 @@
     "named": false
   },
   {
-    "type": "loop",
-    "named": false
-  },
-  {
-    "type": "merge",
-    "named": false
-  },
-  {
-    "type": "message",
-    "named": false
-  },
-  {
-    "type": "meta",
-    "named": false
-  },
-  {
-    "type": "metadata",
-    "named": false
-  },
-  {
-    "type": "nonunique",
-    "named": false
-  },
-  {
-    "type": "not",
-    "named": false
-  },
-  {
-    "type": "null",
-    "named": false
-  },
-  {
-    "type": "objective",
-    "named": false
-  },
-  {
     "type": "occurrence",
-    "named": false
-  },
-  {
-    "type": "of",
-    "named": false
-  },
-  {
-    "type": "or",
-    "named": false
-  },
-  {
-    "type": "ordered",
-    "named": false
-  },
-  {
-    "type": "out",
     "named": false
   },
   {
@@ -372,20 +932,8 @@
     "named": false
   },
   {
-    "type": "parallel",
-    "named": false
-  },
-  {
-    "type": "part",
-    "named": false
-  },
-  {
-    "type": "perform",
-    "named": false
-  },
-  {
-    "type": "port",
-    "named": false
+    "type": "prefix_metadata_annotation",
+    "named": true
   },
   {
     "type": "private",
@@ -400,55 +948,7 @@
     "named": false
   },
   {
-    "type": "readonly",
-    "named": false
-  },
-  {
-    "type": "redefines",
-    "named": false
-  },
-  {
     "type": "ref",
-    "named": false
-  },
-  {
-    "type": "references",
-    "named": false
-  },
-  {
-    "type": "render",
-    "named": false
-  },
-  {
-    "type": "rendering",
-    "named": false
-  },
-  {
-    "type": "rep",
-    "named": false
-  },
-  {
-    "type": "require",
-    "named": false
-  },
-  {
-    "type": "requirement",
-    "named": false
-  },
-  {
-    "type": "return",
-    "named": false
-  },
-  {
-    "type": "satisfy",
-    "named": false
-  },
-  {
-    "type": "send",
-    "named": false
-  },
-  {
-    "type": "snapshot",
     "named": false
   },
   {
@@ -456,59 +956,15 @@
     "named": false
   },
   {
-    "type": "stakeholder",
-    "named": false
-  },
-  {
     "type": "standard",
     "named": false
   },
   {
-    "type": "state",
-    "named": false
-  },
-  {
-    "type": "subject",
-    "named": false
-  },
-  {
-    "type": "subsets",
-    "named": false
-  },
-  {
-    "type": "succession",
-    "named": false
-  },
-  {
-    "type": "then",
-    "named": false
-  },
-  {
-    "type": "timeslice",
-    "named": false
+    "type": "string_literal",
+    "named": true
   },
   {
     "type": "to",
-    "named": false
-  },
-  {
-    "type": "transition",
-    "named": false
-  },
-  {
-    "type": "true",
-    "named": false
-  },
-  {
-    "type": "until",
-    "named": false
-  },
-  {
-    "type": "use",
-    "named": false
-  },
-  {
-    "type": "variant",
     "named": false
   },
   {
@@ -516,35 +972,11 @@
     "named": false
   },
   {
-    "type": "verification",
+    "type": "{",
     "named": false
   },
   {
-    "type": "verify",
-    "named": false
-  },
-  {
-    "type": "via",
-    "named": false
-  },
-  {
-    "type": "view",
-    "named": false
-  },
-  {
-    "type": "viewpoint",
-    "named": false
-  },
-  {
-    "type": "when",
-    "named": false
-  },
-  {
-    "type": "while",
-    "named": false
-  },
-  {
-    "type": "xor",
+    "type": "}",
     "named": false
   }
 ]

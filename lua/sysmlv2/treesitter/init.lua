@@ -33,11 +33,18 @@ function M.setup(opts)
 
     -- Create the highlights query file
     local query_content = [[
-;; Keywords
-((keyword) @property)
-
 ;; Identifiers
 ((identifier) @variable)
+((qualified_name) @variable)
+
+;; Keywords
+((import_prefix) @keyword)
+
+;; Classifications
+((specializes_keyword) @keyword)
+
+;; Documentation
+((documentation) @markup.underline)
 
 ;; Comments
 ((comment) @comment)
