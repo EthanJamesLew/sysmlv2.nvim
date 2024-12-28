@@ -33,141 +33,6 @@ module.exports = grammar({
       '"'
     )),
 
-    owned_expression: $ => $.conditional_expression,
-
-    conditional_expression: $ => choice(
-      $.null_coalescing_expression,
-      seq(
-        $.conditional_operator,
-        $.null_coalescing_expression,
-        '?',
-        $.owned_expression_reference,
-        'else',
-        $.owned_expression_reference
-      )
-    ),
-
-    conditional_operator: $ => 'if',
-
-    null_coalescing_expression: $ => seq(
-      $.implies_expression,
-      repeat(
-        seq(
-          $.null_coalescing_operator,
-          $.implies_expression_reference
-        )
-      ),
-    ),
-
-    owned_expression_reference: $ => $.owned_expression_member,
-
-    null_coalescing_operator: $ => '??',
-
-    implies_expression_reference: $ => $.implies_expression_member,
-
-    implies_expression_member: $ => $.implies_expression,
-
-    owned_expression_member: $ => $.owned_expression,
-
-    implies_expression: $ => seq(
-      $.or_expression,
-      repeat(
-        seq(
-          $.implies_operator,
-          $.or_expression_reference
-        )
-      ),
-    ),
-
-    implies_operator: $ => 'implies',
-
-    or_expression_reference: $ => $.or_expression_member,
-
-    or_expression_member: $ => $.or_expression,
-
-    or_expression: $ => seq(
-      $.xor_expression,
-      repeat(
-        seq(
-          choice(
-            seq(
-              $.or_operator,
-              $.xor_expression
-            ),
-            seq(
-              $.conditional_or_operator,
-              $.xor_expression_reference
-            )
-          )
-        )
-      ),
-    ),
-
-    or_operator: $ => '|',
-
-    conditional_or_operator: $ => 'or',
-
-    xor_expression_reference: $ => $.xor_expression_member,
-
-    xor_expression_member: $ => $.xor_expression,
-
-    xor_expression: $ => seq(
-      $.and_expression,
-      repeat(
-        seq(
-          $.xor_operator,
-          $.and_expression
-        )
-      ),
-    ),
-
-    xor_operator: $ => 'xor',
-
-    and_expression: $ => seq(
-      $.equality_expression,
-      repeat(
-        seq(
-          $.and_operator,
-          $.equality_expression_reference
-        )
-      ),
-    ),
-
-    and_operator: $ => '&',
-
-    conditional_and_operator: $ => 'and',
-
-    equality_expression_reference: $ => $.equality_expression_member,
-
-    equality_expression_member: $ => $.equality_expression,
-
-    equality_expression: $ => seq(
-      $.classification_expression,
-      repeat(
-        seq(
-          $.equality_operator,
-          $.classification_expression
-        )
-      ),
-    ),
-
-    equality_operator: $ => choice(
-      '==',
-      '!=',
-      '===',
-      '!==',
-    ),
-
-    classification_expression: $ => seq(
-      $.relational_expression,
-      repeat(
-        seq(
-          $.classification_operator,
-          $.relational_expression_reference
-        )
-      ),
-    ),
-
     root_namespace: $ => seq(
       choice(
         $.package,
@@ -328,7 +193,7 @@ module.exports = grammar({
     ),
 
     attribute_usage: $ => seq(
-      $.usage_prefix,
+      optional($.usage_prefix),
       $.attribute_usage_keyword,
       $.usage
     ),
@@ -339,12 +204,10 @@ module.exports = grammar({
 
     usage_prefix: $ => seq(
       $.basic_usage_prefix,
-      repeat($.usage_extension_keyword)
     ),
 
     basic_usage_prefix: $ => seq(
-      $.ref_prefix,
-      optional('ref'),
+      'ref',
     ),
 
     usage: $ => seq(
@@ -352,75 +215,10 @@ module.exports = grammar({
       $.usage_completion,
     ),
 
-    usage_declaration: $ => $.feature_declaration,
+    usage_declaration: $ => "TODO",
 
     usage_completion: $ => seq(
-      optional($.value_part),
       $.usage_body
-    ),
-
-    value_part: $ => $.feature_value,
-
-    feature_value: $ => choice(
-      $.argument_expression_value,
-      $.feature_binding,
-      $.target_binding,
-      $.satisfaction_feature_value,
-      $.feature_value_stmt,
-    ),
-
-    feature_value_stmt: $ => seq(
-      choice(
-        '=',
-        ':=',
-      ),
-      $.owned_expression
-    ),
-
-    argument_expression_value: $ => $.owned_expression_reference,
-
-    feature_binding: $ => $.owned_expression,
-
-    target_binding: $ => $.target_expression,
-
-    satisfaction_feature_value: $ => $.satisfaction_reference_expression,
-
-    usage_extension_keyword: $ => choice(
-      $.prefix_metadata_member,
-    ),
-
-    feature_declaration: $ => seq(
-      choice(
-        seq(
-          $.identification,
-          optional($.feature_specialization_part),
-        ),
-        $.feature_specialization_part
-    )),
-
-    feature_specialization_part: $ => seq(
-      choice(
-        seq(
-          $.feature_specialization,
-          repeat($.feature_specialization),
-          optional($.multiplicity_part),
-          repeat($.feature_specialization)
-        ),
-        seq(
-          $.multiplicity_part,
-          repeat($.feature_specialization)
-        )
-    )),
-
-    ref_prefix: $ => seq(
-      optional($.feature_direction),
-      optional(choice(
-        'abstract',
-        'variation'
-      )),
-      optional('readonly'),
-      optional('derived'),
-      optional('end'),
     ),
 
     identification: $ => choice(
@@ -452,7 +250,7 @@ module.exports = grammar({
 
     usage_body: $ => choice(
       ';',
-      seq('{', '...TODO...', '}')
+      seq('{', repeat($.any), '}')
     ),
 
     annotating_element: $ => prec(1, choice(
