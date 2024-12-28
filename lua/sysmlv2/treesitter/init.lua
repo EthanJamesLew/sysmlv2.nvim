@@ -40,6 +40,12 @@ function M.setup(opts)
 ;; Keywords
 ((import_prefix) @keyword)
 
+;; Classifications
+((specializes_keyword) @keyword)
+
+;; Documentation
+((documentation) @markup.underline)
+
 ;; Comments
 ((comment) @comment)
 ((block_comment) @comment)

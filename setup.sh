@@ -8,10 +8,13 @@ cd "$SCRIPT_DIR"
 cd lua/sysmlv2/treesitter/grammar
 
 # Clean any existing files
+if [ -d "build" ]; then
+    rm -rf build
+fi
 rm -rf src/parser.c src/tree_sitter node_modules
 
 # Install dependencies and generate parser
-npm install
+#npm install
 npx tree-sitter generate
 
 # Verify parser.c was generated
