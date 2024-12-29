@@ -3,7 +3,10 @@
 > [!WARNING]
 > 🚧 This is a work in progress. 🚧
 
-SysMLv2 Plugin for vim / neovim.
+<div align="center">
+<img src="./doc/img/example.png" alt="sysmlv2.nvim" width="500">
+<p><i>SysMLv2 Plugin</i></p>
+</div>
 
 ## vim Features
 
