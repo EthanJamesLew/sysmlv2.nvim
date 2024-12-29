@@ -34,12 +34,16 @@ function M.start_syside(opts)
     end
   end
 
-  -- Define minimal on_attach function for gd
+  -- Define on_attach function with common LSP navigation commands
   local function on_attach(client, bufnr)
+    local opts = { noremap = true, silent = true, buffer = bufnr }
+
     -- Enable go to definition
-    vim.keymap.set("n", "gd", function()
-      vim.lsp.buf.definition()
-    end, { noremap = true, silent = true, buffer = bufnr })
+    vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+    -- Enable hover
+    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+    -- Enable go to usages
+    vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
   end
 
   -- Start with minimal client configuration and required handlers
@@ -59,6 +63,8 @@ function M.start_syside(opts)
         return script_dir .. "../../sysml.library" 
       end
     },
+    -- root dir is the cwd of the vim instance
+    root_dir = vim.fn.getcwd(),
     capabilities = {
       workspace = {
         configuration = {
