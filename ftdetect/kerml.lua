@@ -1,6 +1,6 @@
 -- Force reload filetype detection
 vim.cmd([[
     augroup filetypedetect
-        au! BufRead,BufNewFile *.sysml setfiletype sysml
+        au! BufRead,BufNewFile *.kerml setfiletype kerml
     augroup END
 ]])
