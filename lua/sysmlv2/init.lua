@@ -24,9 +24,9 @@ function M.setup(opts)
   end
 
   -- Setup tree-sitter if enabled
-  if M.config.treesitter.enabled then
-    require('sysmlv2.treesitter').setup(M.config.treesitter)
-  end
+  --if M.config.treesitter.enabled then
+  --  require('sysmlv2.treesitter').setup(M.config.treesitter)
+  --end
 end
 
 return M
