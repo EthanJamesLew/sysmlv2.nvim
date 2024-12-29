@@ -6,11 +6,6 @@ M.config = {
     enabled = true,
     -- Your existing LSP config options
   },
-  treesitter = {
-    enabled = true,
-    highlight = true,
-    indent = true,
-  }
 }
 
 -- Setup function
@@ -22,11 +17,6 @@ function M.setup(opts)
   if M.config.lsp.enabled then
     require('sysmlv2.lsp').start_syside()
   end
-
-  -- Setup tree-sitter if enabled
-  --if M.config.treesitter.enabled then
-  --  require('sysmlv2.treesitter').setup(M.config.treesitter)
-  --end
 end
 
 return M
