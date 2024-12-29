@@ -22,7 +22,7 @@ syn keyword sysmlKeyword timeslice to transition true until use variant variatio
 syn keyword sysmlKeyword verify via view viewpoint when while xor
 
 " Comments
-syn region sysmlBlockComment start="//\*" end="\*/" contains=@Spell
+syn region sysmlBlockComment start=/\/\*/ end=/\*\// contains=@Spell
 syn match sysmlLineComment "//.*" contains=@Spell
 
 " Strings
