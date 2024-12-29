@@ -10,11 +10,11 @@
 
 ## vim Features
 
-* Simple Syntax Highlighting
+* Simple SysML/KerML Syntax Highlighting
 
 ## nvim Features
 
-* Simple Syntax Highlighting
+* Simple SysML/KerML Syntax Highlighting
 * [sysml-2ls](https://github.com/sensmetry/sysml-2ls) LSP (Semantic Analysis)
 
 ## vim: Installation
