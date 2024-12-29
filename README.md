@@ -31,6 +31,8 @@ call plug#end()
 
 ## nvim: Installation
 
+For the sysml-2ls support, you will need to have a relatively recent Node.js version installed on your system (tested on Node.js v20.18.0).
+
 Install with your plugin manager of choice. For example, with [packer.nvim](https://github.com/wbthomason/packer.nvim):
 
 ```lua
